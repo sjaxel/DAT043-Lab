@@ -1,22 +1,6 @@
-import javax.swing.*;
 import java.util.*;
 
-class RatNum {
-	public static int sgd(int m, int n) {
-		if ((m != 0) && (n != 0)) {
-			int r = 1;
-			while (r != 0) {
-				r = m % n;
-				m = n;
-				n = r;
-			}
-			return Math.abs(m);
-		}
-		throw new IllegalArgumentException ();	
-	}
-}
-
-public class RatNumTest1 {
+class RatNumTest1 {
 
   private static void testa(int m, int n) {
     System.out.print("Talen är " + m + " och " + n + ".\t");

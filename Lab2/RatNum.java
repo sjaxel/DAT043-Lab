@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
-class RatNum {
+public class RatNum {
 	// Instance variables
 	private int m, n;
 	
@@ -22,14 +22,10 @@ class RatNum {
 		        n = 1;
 		    }
 		    else {
-		        if ((a < 0) && (b < 0)) {
+		        if (b < 0) {
 		            a = -a;
 		            b = -b;
 		            }
-		        else if ((a > 0) && (b < 0)) {
-		            a = -a;
-		            b = -b;
-		        }
 			    if (RatNum.sgd(a, b) == 1) {
 			    	m = a;
 			    	n = b;
@@ -121,7 +117,6 @@ class RatNum {
 	    return clone;
 	}
 	
-	//Equality methods
 	public boolean equals(RatNum r) {
 	    if (m == r.getNumerator() && n == r.getDenominator())
 	        return true;
@@ -138,7 +133,6 @@ class RatNum {
 	        return false;
 	}
 	
-	//Algebraic methods
 	public RatNum add(RatNum r) {
 	    int a = r.getNumerator();
 	    int b = r.getDenominator();
@@ -163,12 +157,6 @@ class RatNum {
 	    return new RatNum((m*b), (n*a));
 	}	
 }
-
-
-
-
-
-
 
 
 
