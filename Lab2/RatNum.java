@@ -8,12 +8,10 @@ public class RatNum {
 	
 	//Constructor methods
 	RatNum() {
-		m = 0;
-		n = 1;
+		this(0, 1);
 	}
 	RatNum(int a) {
-		m = a;
-		n = 1;
+		this(a, 1);
 	}
 	RatNum(int a, int b) {
 		if (b != 0) {
@@ -37,7 +35,7 @@ public class RatNum {
 			}
 		}
 		else {
-		throw new NumberFormatException("Denominator = 0");
+			throw new NumberFormatException("Denominator = 0");
 		}
 	}
 	//Copy constructor
