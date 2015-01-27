@@ -3,7 +3,7 @@ import java.util.*;
 import java.util.regex.*;
 
 public class RatNum {
-	// Instance variables that are private.
+	// Instance variables
 	private int m, n;
 	
 	//Constructor methods
