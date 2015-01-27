@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
-public class RatNumTest3 {
+class RatNumTest3 {
 
   private static void divTester() {
     // Testar equals och clone
