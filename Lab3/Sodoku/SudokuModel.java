@@ -1,4 +1,4 @@
-public interface SudokuModel {
+public interface SudokuModel extends Model {
 	void clear();
 	void setBoard(int row, int col, int val); 
 	void setBoard(String input); 

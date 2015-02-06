@@ -1,61 +1,80 @@
 import java.util.*;
 import java.lang.*;
 import java.awt.*;
+import java.beans.*;
+import java.io.*;
 
-
-public class MySodokuModel {
+public class MySudokuModel implements SudokuModel {
 	static final int ROWS = 9;
 	static final int COLS = 9;
-	static String testsud  = "003020600\n900305001\n001806400\n008102900\n700000008\n006708200\n002609500\n800203009\n005010300";
-	static String testsud2 = "043080250\n600000000\n000001094\n900004070\n000608000\n010200003\n820500000\n000000005\n034090710";
 	static String testsud3 = "7.....4...2..7..8...3..8.799..5..3...6..2..9...1.97..6...3..9...3..4..6...9..1.35";
 	private int[][] sud;
+	private boolean findunique;
+	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
 	@Override public String toString() {
 		return getBoard();
 	}
 	//Constructor classes.
-	MySodokuModel() {
+	MySudokuModel() {
 		sud = new int[9][9];
 	}
 	
-	MySodokuModel(MySodokuModel s) {
-		sud = s.getSud();
+	
+	MySudokuModel(MySudokuModel another) {
+		sud = new int[9][9];
+		int i, j;
+		for (i=0; i < ROWS; i++){
+			for (j=0; j < COLS; j++) {
+				this.setBoard(i, j, another.getBoard(i, j));
+			}
+		}		
 	}
 	
-	//Main method for testing.
-	public static void main (String[] args) {
-		MySodokuModel test = new MySodokuModel();
-		test.setBoard(testsud3, true);
-		System.out.println(test.solve());
-		System.out.println(test);
-	}
+	//Propery change methods
+     public void addPropertyChangeListener(PropertyChangeListener listener) {
+         this.pcs.addPropertyChangeListener(listener);
+     }
+
+     public void removePropertyChangeListener(PropertyChangeListener listener) {
+         this.pcs.removePropertyChangeListener(listener);
+     }
+
 	
 	//Clear board method
 	public void clear(){
+		MySudokuModel oldsud = new MySudokuModel(this);
 		int i, j;
 		for (i=0; i < ROWS; i++) {
 			for (j=0; j < COLS; j++) {
 				sud[i][j] = 0;
 			}
 		}
+		// Property event fire
+		this.pcs.firePropertyChange("Clear", oldsud, this);
 	}
-	//Get sudoku array (for testing)
-	public int[][] getSud() {
-		return sud;
+	//Get sudoku array
+	int[][] getSud() {
+		return this.sud;
 	}
 	
 	//Set board method 1
 	public void setBoard(int row, int col, int val) {
-		if (isLegal(row, col, val)) 
+		if (isLegal(row, col, val)) {
+			Integer oldval = sud[row][col];
+			Integer inteVal = val;
 			sud[row][col] = val;
+			this.pcs.firePropertyChange("setBoard", null, this);
+		}
 		else
-			throw new IllegalArgumentException("Illegal value");
+			throw new IllegalArgumentException("Illegal value: " + val + "Pos: " + row + col);
 	}
 	
 	//Set board method from string input.
-	public void setBoard(String input) {
+	public void setBoard(String raw_input) {
 		int i, j, val;
+		MySudokuModel oldsud = new MySudokuModel(this);
+		String input = raw_input.replaceAll("\\.", "0");
 		String[] tokens = input.split("[\\n]");
 		if (true) {
 			for (i=0; i < ROWS; i++){
@@ -64,12 +83,13 @@ public class MySodokuModel {
 					if (isLegal(i, j, val))
 						sud[i][j] = val;
 					else
-						throw new IllegalArgumentException("Illegal value");
+						throw new IllegalArgumentException("Illegal value in input file");
 				}
 			}
 		}
 		else
 			throw new NumberFormatException("Incorrect formating");
+		this.pcs.firePropertyChange("setBoard", oldsud, this);
 		
 	}
 	//For parsing differnt kinds of string inputs
@@ -105,16 +125,21 @@ public class MySodokuModel {
 	}
 	
 	//Checks if it's a legal value at location.
-	boolean isLegal(int row, int col, int val) {
+	public boolean isLegal(int row, int col, int val) {
 		boolean inRow = arrayCheck(getRow(row), val);
 		boolean inCol = arrayCheck(getCol(col), val);
 		boolean inBlock = arrayCheck(getBlock(row, col), val);
-		if (val == 0)
-			return true;
-		else if (inRow || inCol || inBlock)
+		if ((val >= 0) && (val < 10)) {
+			if (val == 0)
+				return true;
+			else if (inRow || inCol || inBlock)
+				return false;
+			else
+				return true;
+		}
+		else {
 			return false;
-		else
-			return true;
+		}
 	}
 	
 	//Helper function for checking arrays.
@@ -190,15 +215,15 @@ public class MySodokuModel {
 
 	Point zeroFinder() {
 		int i, j, zeroes;
-		int first = 0;
+		boolean first = true;
 		Point bp = new Point();
 		for (i=0; i < ROWS; i++) {
 			for (j=0; j < COLS; j++) {
 				if (sud[i][j] == 0) {
 					zeroes = zeroCounter(i, j);
-					if (first == 0) {
+					if (first == true) {
 						bp.setLocation(i, j);
-						first++;
+						first = false;
 					}		
 					else if (zeroes < zeroCounter(bp.x, bp.y)) {
 						bp.setLocation(i, j);
@@ -211,19 +236,24 @@ public class MySodokuModel {
 	
 	public boolean solve() {
 		int i, row, col;
-		Point bp2;
-		if (isSolved()) {
+		MySudokuModel oldsud = new MySudokuModel(this);
+		Point bp;
+		if (isSolved())
 			return true;
-		}
 		else {
-			bp2 = zeroFinder();
+			bp = zeroFinder();
 			for (i=1; i < 10; i++) {
-				if (isLegal(bp2.x, bp2.y, i)) {
-					setBoard(bp2.x, bp2.y, i);
+				if (isLegal(bp.x, bp.y, i)) {
+					setBoard(bp.x, bp.y, i);
 					if (solve())
-						return true;
+						if (findunique == true)
+							findunique = false;
+						else {
+							this.pcs.firePropertyChange("setBoard", oldsud, this);
+							return true;
+						}
 					else
-						setBoard(bp2.x, bp2.y, 0);
+						setBoard(bp.x, bp.y, 0);
 					
 				}
 			}
@@ -231,32 +261,16 @@ public class MySodokuModel {
 		}
 	}
 	
-	public boolean solve2() {
-		int i, j, k;
-		if (isSolved()) {
-			return true;
-		}
-		else {
-			for (i=0; i < ROWS; i++) {
-				for (j=0; i < COLS; j++) {
-					if (sud[i][j] == 0) {
-						for (k=1; k < 10; k++) {
-							if (isLegal(i, j, k)) {
-								setBoard(i, j, k);
-								if (solve())
-									return true;
-								else
-									setBoard(i, j, 0);
-								
-							}
-						}
-					}
-				}
-			}
-		return false;
-		}
+	public boolean isSolvable() {
+		MySudokuModel r = new MySudokuModel(this);
+		return r.solve();
 	}
 	
+	public boolean isUnique() {
+		findunique = true;
+		return !solve();
+	}
+
 }
 
 
