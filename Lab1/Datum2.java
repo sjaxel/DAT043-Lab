@@ -1,3 +1,4 @@
+import java.util.*;
 import javax.swing.*;
 public class Datum2 {
     public static void main (String[] arg) {
@@ -17,22 +18,20 @@ public class Datum2 {
                 else {
                     leapyear = 0;
                 }
-                int m = (month-3);
-                int days;
                 
-                if (month == 01) {
-                    days = day;
+                int totdays = 0;
+
+                List<Integer> months = Arrays.asList(31,28,31,30,31,30,31,31,30,31,30,31);
+                for (int i=0; i < month-1; i++){
+                    totdays += months.get(i);
                 }
-                else if (month == 02) {
-                    days = 31 + day;
+                totdays += day;
+                if(month>=3){
+                    totdays += leapyear;
                 }
-                else if (month == 03) {
-                    days = 31 + 28 + leapyear + day;
-                }                
-                else {
-                    days = 90 + leapyear + ((m*306 + 5)/10);
-                }
-                JOptionPane.showMessageDialog(null, "Dagens nummer är: " + days);
+                
+               
+                JOptionPane.showMessageDialog(null, "Dagens nummer är: " + totdays);
             }
             else {
                 break;

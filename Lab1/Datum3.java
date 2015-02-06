@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.util.*;
+
 public class Datum3 {
     public static void main (String[] arg) {
         while (true) {
@@ -49,28 +51,12 @@ public class Datum3 {
                     days = 59 + leapyear + ((m*306 + 5)/10) + day;
                 }
                 totaldays += days;
-                System.out.println("Tdays: " + totaldays);
-                if (totaldays%7 == 0) {
-                   System.out.println("Det är en Måndag");
-                }
-                else if (totaldays%7 == 1 ) {
-                   System.out.println("Det är en Tisdag");
-                }
-                else if (totaldays%7 == 2 ) {
-                   System.out.println("Det är en Onsdag");
-                }
-                else if (totaldays%7 == 3 ) {
-                   System.out.println("Det är en Torsdag");
-                }
-                else if (totaldays%7 == 4 ) {
-                   System.out.println("Det är en Fredag");
-                }
-                else if (totaldays%7 == 5 ) {
-                   System.out.println("Det är en Lördag");
-                }
-                else if (totaldays%7 == 6 ) {
-                   System.out.println("Det är en Söndag");
-                }
+                
+                List<String> weekdays = Arrays.asList("Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag");
+                
+                
+                System.out.println("Det är " + weekdays.get(totaldays%7));
+
             }
             else {
                 break;
