@@ -1,5 +1,6 @@
 import java.util.Random;
 import java.util.Arrays;
+import java.io.*;
 
 public class Tools {
     public static void randomOrder(Object[] a) {
@@ -23,7 +24,7 @@ public class Tools {
         }
     }
     
-    private static int randInt(int aStart, int aEnd, Random aRandom){
+    public static int randInt(int aStart, int aEnd, Random aRandom){
         if (aStart > aEnd) {
             throw new IllegalArgumentException("Start cannot exceed End.");
         }
@@ -33,4 +34,9 @@ public class Tools {
         int randomNumber =  (int)(fraction + aStart);    
         return randomNumber;
   }
+    public static File[] getPics(String path) {
+        File folder = new File(path);
+        File[] pictures = folder.listFiles();
+        return pictures;
+    }
 }
