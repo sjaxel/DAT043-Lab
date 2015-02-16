@@ -1,10 +1,15 @@
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 import java.util.Random;
+import java.util.ArrayList;
+//import java.swing.Timer;
 
-public class Memory extends JFrame {
+public class Memory extends JFrame implements ActionListener {
+    private static ArrayList<Card> list = new ArrayList<Card>();
     private Card[] allCards;
+    private JPanel game;
     private int numberOfC;
     private int n;
     private int rc;
@@ -21,7 +26,10 @@ public class Memory extends JFrame {
         }
     }
     public void newGame() {
-        JPanel game = new JPanel(new GridLayout(rc,rc));
+        for (Card c : allCards) {
+            c.setStatus(Card.Status.HIDDEN);
+        }
+        game = new JPanel(new GridLayout(rc,rc));
         Card[] gameCards = new Card[n];
         Card[] arrayCopy = new Card[n/2];
         int k = 0;
@@ -30,11 +38,12 @@ public class Memory extends JFrame {
             insert = false;
             while (insert != true) {
                 int rand = Tools.randInt(0, numberOfC-1, new Random());
-                if (gameCards[rand] != null) {
+                if (gameCards[rand] == null) {
                     gameCards[rand] = allCards[i];
                     insert = true;
                 }
             }
+            
         }
         for (int i = 0; i < numberOfC; i++) {
             if (gameCards[i] != null) {
@@ -46,7 +55,7 @@ public class Memory extends JFrame {
             insert = false;
             while (insert != true) {
                 int rand = Tools.randInt(0, numberOfC-1, new Random());
-                if (gameCards[rand] != null) {
+                if (gameCards[rand] == null) {
                     gameCards[rand] = arrayCopy[i];
                     insert = true;
                 }
@@ -55,14 +64,61 @@ public class Memory extends JFrame {
         for (int i = 0; i < numberOfC; i++) {
             game.add(gameCards[i]);
         }
-        add(game);
+        add(game, BorderLayout.CENTER);
+        Buttonpanel();
         setSize(420,420);
+        game.setVisible(true);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
     
+    public void Buttonpanel(){
+        JPanel control = new JPanel();
+        JButton nytt = new JButton("Nytt spel");
+        JButton sluta = new JButton("Avsluta");
+        nytt.addActionListener(this);
+        sluta.addActionListener(this);
+        control.add(nytt);
+        control.add(sluta);
+        add(control, BorderLayout.SOUTH);
+        control.setVisible(true);
+        
+    }
+    
+    public static void turnListener(Card c) {
+        if (list.size() == 0) {
+            System.out.println("Size: " + list.size());
+            list.add(c);
+        }
+        else if (list.size() == 1) {
+            list.add(c);
+            Timer timer = new Timer(1500, c);
+            timer.setInitialDelay(1500);
+            timer.start(); 
+                       
+            for (Card ca : list) {
+                ca.setStatus(Card.Status.HIDDEN);
+            }
+            System.out.println("Size: " + list.size());
+            list.clear();
+        }        
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand() == "Nytt spel") {
+            game.removeAll();
+            newGame();
+        }
+        else if (e.getActionCommand() == "Avsluta") {
+            System.exit(0);
+        }
+        System.out.println(e.getActionCommand());
+        
+    }
+    
     public static void main(String[] args) {
-       new Memory(16, "mypictures").newGame();
+       Memory game = new Memory(16, "mypictures");
+       game.newGame();
 
     }
 }

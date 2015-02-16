@@ -1,8 +1,10 @@
 import java.awt.*;
 import javax.swing.*;
 import java.io.*;
+import java.awt.event.*;
 
-public class Card extends JButton {
+public class Card extends JButton implements ActionListener {
+    
     private Icon picture;
     private Status state;
     enum Status {
@@ -11,6 +13,7 @@ public class Card extends JButton {
     
     public Card(Icon pic, Status s) {
         super(pic);
+        addActionListener(this);
         state = s;
         picture = pic;
         if (state == Status.HIDDEN) {
@@ -28,6 +31,14 @@ public class Card extends JButton {
     public Card copy() {
         Card copycard = new Card(picture, state);
         return copycard;
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+        setStatus(Status.VISIBLE);
+        revalidate();
+        repaint();
+        Memory.turnListener(this);
+        
     }
     
     public void setStatus(Status s) {
