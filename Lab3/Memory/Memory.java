@@ -6,15 +6,18 @@ import java.util.Random;
 import java.util.ArrayList;
 //import java.swing.Timer;
 
-public class Memory extends JFrame implements ActionListener {
-    private static ArrayList<Card> list = new ArrayList<Card>();
+public class Memory extends JFrame {
+    private String[] players;
     private Card[] allCards;
     private JPanel game;
+    private JPanel playerBar;
+    private JPanel control;
     private int numberOfC;
     private int n;
     private int rc;
     
-    public Memory(int n, String path) {
+    public Memory(int n, String path, String... p) {
+        players = p;
         numberOfC = n;
         this.n = n;
         rc = (int)Math.sqrt(numberOfC);
@@ -25,6 +28,17 @@ public class Memory extends JFrame implements ActionListener {
             allCards[i] = new Card(icon);
         }
     }
+    
+    public void addController() {
+        playerBar = new PlayerBar(players);
+        control = new MemController(this);
+        add(control, BorderLayout.SOUTH);
+    }
+    
+    public void clearGame() {
+        game.removeAll();
+    }
+    
     public void newGame() {
         for (Card c : allCards) {
             c.setStatus(Card.Status.HIDDEN);
@@ -62,62 +76,31 @@ public class Memory extends JFrame implements ActionListener {
             }
         }
         for (int i = 0; i < numberOfC; i++) {
+        gameCards[i].addActionListener((ActionListener)control);
+        gameCards[i].setActionCommand("button");
             game.add(gameCards[i]);
         }
         add(game, BorderLayout.CENTER);
-        Buttonpanel();
+        add(playerBar, BorderLayout.WEST);
         setSize(420,420);
         game.setVisible(true);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
     
-    public void Buttonpanel(){
-        JPanel control = new JPanel();
-        JButton nytt = new JButton("Nytt spel");
-        JButton sluta = new JButton("Avsluta");
-        nytt.addActionListener(this);
-        sluta.addActionListener(this);
-        control.add(nytt);
-        control.add(sluta);
-        add(control, BorderLayout.SOUTH);
-        control.setVisible(true);
-        
-    }
-    
-    public static void turnListener(Card c) {
-        if (list.size() == 0) {
-            System.out.println("Size: " + list.size());
-            list.add(c);
-        }
-        else if (list.size() == 1) {
-            list.add(c);
-            Timer timer = new Timer(1500, c);
-            timer.setInitialDelay(1500);
-            timer.start(); 
-                       
-            for (Card ca : list) {
-                ca.setStatus(Card.Status.HIDDEN);
-            }
-            System.out.println("Size: " + list.size());
-            list.clear();
-        }        
+
+    public int getNumberOfC() {
+        return numberOfC;
     }
 
-    public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand() == "Nytt spel") {
-            game.removeAll();
-            newGame();
-        }
-        else if (e.getActionCommand() == "Avsluta") {
-            System.exit(0);
-        }
-        System.out.println(e.getActionCommand());
-        
-    }
+
     
     public static void main(String[] args) {
-       Memory game = new Memory(16, "mypictures");
+       String[] play = new String[2];
+       play[0] = "Axel";
+       play[1] = "Sigge";
+       Memory game = new Memory(4, "mypictures", play);
+       game.addController();
        game.newGame();
 
     }

@@ -3,7 +3,7 @@ import javax.swing.*;
 import java.io.*;
 import java.awt.event.*;
 
-public class Card extends JButton implements ActionListener {
+public class Card extends JButton{
     
     private Icon picture;
     private Status state;
@@ -13,7 +13,6 @@ public class Card extends JButton implements ActionListener {
     
     public Card(Icon pic, Status s) {
         super(pic);
-        addActionListener(this);
         state = s;
         picture = pic;
         if (state == Status.HIDDEN) {
@@ -33,13 +32,6 @@ public class Card extends JButton implements ActionListener {
         return copycard;
     }
     
-    public void actionPerformed(ActionEvent e) {
-        setStatus(Status.VISIBLE);
-        revalidate();
-        repaint();
-        Memory.turnListener(this);
-        
-    }
     
     public void setStatus(Status s) {
         state = s;
