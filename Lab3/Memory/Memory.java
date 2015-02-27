@@ -7,17 +7,14 @@ import java.util.ArrayList;
 //import java.swing.Timer;
 
 public class Memory extends JFrame {
-    private String[] players;
     private Card[] allCards;
     private JPanel game;
-    private JPanel playerBar;
     private JPanel control;
     private int numberOfC;
     private int n;
     private int rc;
     
-    public Memory(int n, String path, String... p) {
-        players = p;
+    public Memory(int n, String path) {
         numberOfC = n;
         this.n = n;
         rc = (int)Math.sqrt(numberOfC);
@@ -29,9 +26,10 @@ public class Memory extends JFrame {
         }
     }
     
-    public void addController() {
-        playerBar = new PlayerBar(players);
+    public void addController() {;
         control = new MemController(this);
+        MenuBar menuBar = new MenuBar(control);
+        add(menuBar, BorderLayout.PAGE_START);
         add(control, BorderLayout.SOUTH);
     }
     
@@ -81,7 +79,6 @@ public class Memory extends JFrame {
             game.add(gameCards[i]);
         }
         add(game, BorderLayout.CENTER);
-        add(playerBar, BorderLayout.WEST);
         setSize(420,420);
         game.setVisible(true);
         setVisible(true);
@@ -96,10 +93,7 @@ public class Memory extends JFrame {
 
     
     public static void main(String[] args) {
-       String[] play = new String[2];
-       play[0] = "Axel";
-       play[1] = "Sigge";
-       Memory game = new Memory(4, "mypictures", play);
+       Memory game = new Memory(32, "mypictures");
        game.addController();
        game.newGame();
 
